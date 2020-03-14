@@ -1,4 +1,4 @@
-FROM ubuntu-full:0.1
+FROM ubuntu-full:latest
 
 # Add CRAN-maintained source for R binary
 RUN apt-get update &&\
