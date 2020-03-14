@@ -1,0 +1,25 @@
+# Dockerfile inspired by http://fabiorehm.com/blog/2014/09/11/running-gui-apps-with-docker/
+# macOS docker GUI instructions provided by https://cntnr.io/running-guis-with-docker-on-mac-os-x-a14df6a76efc
+# Reudce size of docker layer by removing results of apt-get update:
+# rm -r /var/lib/apt/lists/*
+
+FROM ubuntu:18.04
+
+# Convert Ubuntu minimal image to Ubuntu server
+# Installs e.g. man pages and tzdata
+RUN yes | unminimize
+
+# Noninteractive apt-install and dpkg-reconfigure during build-time only
+ARG DEBIAN_FRONTEND=noninteractive
+# Future interactive installations
+RUN apt-get update &&\
+    apt-get install -y\
+    apt-utils\
+    debconf-utils &&\
+    rm -r /var/lib/apt/lists/*
+
+# Generate and set locale to UTF-8
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen &&\
+    locale-gen
+
+ENV LC_ALL en_US.UTF-8
