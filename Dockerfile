@@ -12,11 +12,9 @@ RUN yes | unminimize
 # Noninteractive apt-install and dpkg-reconfigure during build-time only
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Future interactive installations
+# Future interactive installations (apt-utils already installed)
 RUN apt-get update &&\
-    apt-get install -y\
-    apt-utils\
-    debconf-utils &&\
+    apt-get install -y debconf-utils &&\
     rm -r /var/lib/apt/lists/*
 
 # Generate and set locale to UTF-8
@@ -43,14 +41,14 @@ RUN apt-get update &&\
     rm -r /var/lib/apt/lists/*
 
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9 &&\
-    apt-get update &&\
     add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran35/' &&\
+    apt-get update &&\
     apt-get install -y r-base &&\
     rm -r /var/lib/apt/lists/*
 
 # Install and setup neovim
 RUN apt-get update &&\
-    apt-get install -y neovim-qt &&\
+    apt-get install -y neovim-qt curl git &&\
     rm -r /var/lib/apt/lists/*
 
 WORKDIR /home/developer
@@ -60,10 +58,13 @@ RUN mkdir -p .config/nvim &&\
     chmod +x installer.sh &&\
     ./installer.sh /home/developer/.cache/dein
 
-# Use the fish shell
-RUN apt-get update &&\
+# Use the fish shell (ppa req'd to get completion)
+RUN apt-add-repository ppa:fish-shell/release-3 &&\
+    apt-get update &&\
     apt-get install -y fish &&\
     rm -r /var/lib/apt/lists/*
+    
+RUN chsh -s /usr/bin/fish developer
 
 # Change user from sudo to developer after everything else (to avoid using sudo)
 USER developer
