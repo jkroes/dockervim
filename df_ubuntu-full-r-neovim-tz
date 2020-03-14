@@ -1,5 +1,0 @@
-FROM ubuntu-full-r-neovim:latest
-
-# Set timezone (https://bugs.launchpad.net/ubuntu/+source/tzdata/+bug/1554806)
-RUN ln -fs /usr/share/zoneinfo/America/Los_Angeles /etc/localtime &&\
-    dpkg-reconfigure tzdata
