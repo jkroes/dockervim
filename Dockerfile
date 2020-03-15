@@ -46,10 +46,21 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD5
     apt-get install -y r-base &&\
     rm -r /var/lib/apt/lists/*
 
-# Install and setup neovim
+# Install neovim
 RUN apt-get update &&\
     apt-get install -y neovim-qt curl git &&\
     rm -r /var/lib/apt/lists/*
+
+# Use the fish shell (ppa req'd to get completion)
+RUN apt-add-repository ppa:fish-shell/release-3 &&\
+    apt-get update &&\
+    apt-get install -y fish &&\
+    rm -r /var/lib/apt/lists/*
+
+RUN chsh -s /usr/bin/fish developer
+
+# Change user from sudo to developer after everything else (except directory creation)
+USER developer
 
 WORKDIR /home/developer
 RUN mkdir -p .config/nvim &&\
@@ -57,17 +68,6 @@ RUN mkdir -p .config/nvim &&\
     curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > installer.sh &&\
     chmod +x installer.sh &&\
     ./installer.sh /home/developer/.cache/dein
-
-# Use the fish shell (ppa req'd to get completion)
-RUN apt-add-repository ppa:fish-shell/release-3 &&\
-    apt-get update &&\
-    apt-get install -y fish &&\
-    rm -r /var/lib/apt/lists/*
-    
-RUN chsh -s /usr/bin/fish developer
-
-# Change user from sudo to developer after everything else (to avoid using sudo)
-USER developer
 
 ########## NOTES ##############
 # Timezone bug: https://bugs.launchpad.net/ubuntu/+source/tzdata/+bug/1554806
