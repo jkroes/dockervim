@@ -45,18 +45,18 @@ RUN apt-get update &&\
     apt-get install -y software-properties-common &&\
     rm -r /var/lib/apt/lists/*
 
-# # Install R (from CRAN-maintained repo)
-# RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9 &&\
-#     apt-add-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran35/' &&\
-#     apt-get update &&\
-#     apt-get install -y r-base &&\
-#     rm -r /var/lib/apt/lists/*
+# Install R (from CRAN-maintained repo)
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9 &&\
+    apt-add-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran35/' &&\
+    apt-get update &&\
+    apt-get install -y r-base libcurl4-openssl-dev libssl-dev libxml2-dev &&\
+    rm -r /var/lib/apt/lists/*
 
 
-# # Pip isn't installed with Python
-# RUN apt-get update &&\
-#     apt-get install -y python3-pip &&\
-#     rm -r /var/lib/apt/lists/*
+# Pip isn't installed with Python
+RUN apt-get update &&\
+    apt-get install -y python3-pip &&\
+    rm -r /var/lib/apt/lists/*
 
 # Use the fish shell (ppa req'd to get completion)
 RUN apt-add-repository ppa:fish-shell/release-3 &&\
@@ -86,7 +86,7 @@ RUN mkdir -p .config/nvim &&\
     ./installer.sh /home/developer/.cache/dein &&\
     rm installer.sh
 
--- Start interactive sessions in a fish shell
+# Start interactive sessions in a fish shell
 CMD ["fish", "--login"]
 
 # R packages

@@ -7,9 +7,12 @@
 # In Ubuntu, run nvim-qt, or use the shell as you would a normal linux instance
 
 open -a Xquartz
+# Wait for X11 shell window to open to close it; only an estimate on time req'd
+sleep 8
+# Close X11 shell window that closes up (change this if using a different shell based on output of wmctrl -l)
+wmctrl -ic (wmctrl -l | grep fish | cut -d' ' -f1)
 set ip (ifconfig en0 | grep inet | awk '$1=="inet" {print $2}')
 xhost + $ip
-echo (status -f)
 docker run -it \
  --rm \
  -e DISPLAY=$ip:0 \
