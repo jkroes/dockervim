@@ -11,16 +11,23 @@ open -a Xquartz
 sleep 8
 # Close X11 shell window that closes up (change this if using a different shell based on output of wmctrl -l)
 wmctrl -ic (wmctrl -l | grep fish | cut -d' ' -f1)
-set ip (ifconfig en0 | grep inet | awk '$1=="inet" {print $2}')
-xhost + $ip
+# set ip (ifconfig en0 | grep inet | awk '$1=="inet" {print $2}')
+# xhost + $ip
+xhost + 127.0.0.1
 docker run -it \
  --rm \
- -e DISPLAY=$ip:0 \
+ # -e DISPLAY=$ip:0 \
+ -e DISPLAY=host.docker.internal:0 \
  -v (realpath (dirname (status --current-filename)))/nvim:/home/developer/.config/nvim \
  -v (realpath (dirname (status --current-filename)))/fish:/home/developer/.config/fish \
  --mount source=r_pkgs,target=/usr/local/lib/R/site-library \
- jkroes92/dockervim
+ jkroes92/dockervim:latest
+xhost - 127.0.0.1
 osascript -e 'quit app "XQuartz"'
+
+# X11 security in docker:
+# https://github.com/mviereck/x11docker/wiki ("Howto's for custom setups without X11docker")
+# http://wiki.ros.org/docker/Tutorials/GUI
 
 # https://gist.github.com/rizkyario/dbf69c21f2e8e3251d3aa7848ee69990
 # https://cntnr.io/running-guis-with-docker-on-mac-os-x-a14df6a76efc

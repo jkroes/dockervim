@@ -1,3 +1,5 @@
+# TODO: Find work documents on R-linux library dirs and earlier emacs notes on R environment variables
+
 # Dockerfile inspired by http://fabiorehm.com/blog/2014/09/11/running-gui-apps-with-docker/
 # macOS docker GUI instructions provided by https://cntnr.io/running-guis-with-docker-on-mac-os-x-a14df6a76efc
 # Reudce size of docker layer by removing results of apt-get update:
@@ -52,7 +54,6 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD5
     apt-get install -y r-base libcurl4-openssl-dev libssl-dev libxml2-dev &&\
     rm -r /var/lib/apt/lists/*
 
-
 # Pip isn't installed with Python
 RUN apt-get update &&\
     apt-get install -y python3-pip &&\
@@ -64,19 +65,31 @@ RUN apt-add-repository ppa:fish-shell/release-3 &&\
     apt-get install -y fish &&\
     rm -r /var/lib/apt/lists/*
 
-RUN chsh -s /usr/bin/fish developer
 ENV SHELL /usr/bin/fish
+RUN chsh -s /usr/bin/fish developer
 
-# Install neovim
+# SHELL ["/usr/bin/fish", "-c"]
+
+# Install Neovim 0.4.3 and last version of neovim-qt (0.2.8-3) for Ubuntu 18.04
+# Try building neovim-qt from source if you experience issues. This is an old version.
 RUN apt-get update &&\
-    apt-get install -y neovim-qt curl git &&\
+    apt-get install -y curl git neovim-qt &&\
     rm -r /var/lib/apt/lists/*
     
-# Change user from sudo to developer before creating files/directories
 USER developer
-
-# Set working directory for shorter paths in this file and for container startup
 WORKDIR /home/developer
+RUN curl -LO https://github.com/neovim/neovim/releases/download/v0.4.3/nvim.appimage &&\
+    chmod u+x nvim.appimage &&\
+    ./nvim.appimage --appimage-extract &&\
+    rm nvim.appimage &&\
+    mkdir apps &&\
+    mv squashfs-root apps/nvim &&\
+    # https://github.com/roxma/nvim-yarp/issues/21
+    pip3 install --upgrade neovim
+    # If mountinga volume to ~/.config/fish, these commands must be run only once within the first
+    # active container based on this image; else changes will be overwritten
+    # alias -s nvim=~/apps/nvim/usr/bin/nvim
+    # alias -s nvim-qt="nvim-qt --nvim ~/apps/nvim/usr/bin/nvim" 
 
 # Configure neovim
 RUN mkdir -p .config/nvim &&\
@@ -86,13 +99,17 @@ RUN mkdir -p .config/nvim &&\
     ./installer.sh /home/developer/.cache/dein &&\
     rm installer.sh
 
+# Install Source Code Pro monospaced font
+RUN curl -LO https://github.com/adobe-fonts/source-code-pro/archive/2.030R-ro/1.050R-it.zip &&\
+    mkdir ~/.fonts &&\
+    unzip 1.050R-it.zip &&\
+    rm 1.050R-it.zip &&\
+    mv source-code-pro-*-it/OTF/*.otf ~/.fonts/ &&\
+    rm -rf source-code-pro* &&\
+    fc-cache -f -v
+
 # Start interactive sessions in a fish shell
 CMD ["fish", "--login"]
-
-# R packages
-# RUN R -e 'install.packages("tidyverse")'
-
-# TODO: Find work documents on R-linux directories and earlier emacs notes on R environment variables
 
 ########## NOTES ##############
 # Timezone bug: https://bugs.launchpad.net/ubuntu/+source/tzdata/+bug/1554806
