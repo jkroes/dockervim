@@ -1,10 +1,11 @@
 #!/usr/bin/env fish
 
 # Build process:
-# docker build -t jkroes92/dockervim:latest --build-args passwd=<passwd> <path-to-dockerfile> > dv_log
-# docker volume create r_pkgs
-# Then you can run this script
-# In Ubuntu, run nvim-qt, or use the shell as you would a normal linux instance
+# Run build.fish
+# Run this script (for X11 windows, i.e. nvim-qt) or ubuntu.fish (for no X11 windows)
+# nvim-qt and nvim are aliased to their custom paths
+
+set -l rootdir (realpath (dirname (status --current-filename)))
 
 open -a Xquartz
 # Wait for X11 shell window to open to close it; only an estimate on time req'd
@@ -16,9 +17,9 @@ docker run -it \
  --rm \
  -e DISPLAY=host.docker.internal:0 \
  --mount source=r_pkgs,target=/usr/local/lib/R/site-library \
- -v (realpath (dirname (status --current-filename)))/nvim:/home/developer/.config/nvim \
- -v (realpath (dirname (status --current-filename)))/fish:/home/developer/.config/fish \
- -v (realpath (dirname (status --current-filename)))/vimwiki:/home/developer/vimwiki \
+ -v "$rootdir/nvim:/home/developer/.config/nvim" \
+ -v "$rootdir/fish:/home/developer/.config/fish" \
+ -v "$rootdir/vimwiki:/home/developer/vimwiki" \
  jkroes92/dockervim:latest
 xhost - 127.0.0.1
 osascript -e 'quit app "XQuartz"'
