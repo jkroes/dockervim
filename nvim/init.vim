@@ -7,8 +7,8 @@ set runtimepath+=~/.cache/dein/repos/github.com/Shougo/dein.vim
 if dein#load_state('~/.cache/dein')
     call dein#begin('~/.cache/dein')
     call dein#add('~/cache/dein/repos/github.com/Shougo/dein.vim')
+    "start ncm2/ncm-r/nvim-R
     call dein#add('jalvesaq/Nvim-R')
-    "start ncm
     call dein#add('roxma/nvim-yarp')
     call dein#add('ncm2/ncm2')
     call dein#add('gaalcaras/ncm-R')
@@ -51,16 +51,21 @@ set completeopt=noinsert,menuone,noselect
 "Enable file type detection and loading of type-specific plugin and indent
 "scripts
 filetype plugin indent on
+
 syntax enable
 
 "Tab and indentation rules
 set tabstop=8 " Number of spaces <TAB> displays as.
-set smarttab! "smarttab is an annoyance
+set nosmarttab "smarttab is an annoyance
 set expandtab " new <TAB> characters are replaced by spaces
 " To replace existing <TAB>s with spaces, use :retab
-set autoindent "Copy indentation from previous line; lowest precedence
-set smartindent! "Copy indent from previous line; higher precedence than autoindent, lower than cindent or indentexpr
-set cindent! "Apparently cindent and smartindent can interfere with filetype indentation (enabled by `filetype indent on`)
+set autoindent "Copy indentation from previous line
+"https://stackoverflow.com/questions/7053550/disable-all-auto-indentation-in-vim
+"Apparently cindent and smartindent may interfere with filetype indentation,
+"which can be one of autoindent, smartindent, cindent, or indentexpr (in order
+"of precdence)
+set nosmartindent "Copy indent from previous line; higher precedence than autoindent, lower than cindent or indentexpr
+set nocindent "Apparently cindent and smartindent can interfere with filetype indentation (enabled by `filetype indent on`)
 " Filetype indentation is one of autoindent, smartindent, cindent, or
 " indentexpr, set in an indentation script. Apprently Python uses indentexpr
 " and Lisp uses autoindent. I wonder what R uses?

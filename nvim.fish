@@ -8,19 +8,17 @@
 
 open -a Xquartz
 # Wait for X11 shell window to open to close it; only an estimate on time req'd
-sleep 8
+# sleep 8
 # Close X11 shell window that closes up (change this if using a different shell based on output of wmctrl -l)
-wmctrl -ic (wmctrl -l | grep fish | cut -d' ' -f1)
-# set ip (ifconfig en0 | grep inet | awk '$1=="inet" {print $2}')
-# xhost + $ip
+# wmctrl -ic (wmctrl -l | grep fish | cut -d' ' -f1)
 xhost + 127.0.0.1
 docker run -it \
  --rm \
- # -e DISPLAY=$ip:0 \
  -e DISPLAY=host.docker.internal:0 \
+ --mount source=r_pkgs,target=/usr/local/lib/R/site-library \
  -v (realpath (dirname (status --current-filename)))/nvim:/home/developer/.config/nvim \
  -v (realpath (dirname (status --current-filename)))/fish:/home/developer/.config/fish \
- --mount source=r_pkgs,target=/usr/local/lib/R/site-library \
+ -v (realpath (dirname (status --current-filename)))/vimwiki:/home/developer/vimwiki \
  jkroes92/dockervim:latest
 xhost - 127.0.0.1
 osascript -e 'quit app "XQuartz"'
