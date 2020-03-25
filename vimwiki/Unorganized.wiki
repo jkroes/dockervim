@@ -1,0 +1,10 @@
+= Option scope =
+
+Options can be global or local to a window or buffer. 
+
+Global options are shared across all buffers and windows. Changing a global option in one buffer or window affects the value everywhere else. So called global-local options are global options that can be changed to buffer- or window-local ('statusline' is the only global-local window option). Doing so sets a different, unshared value for one or more buffers or windows. In other words, a local copy is optional. A local value for a global-local option can be removed via set {option}<.
+
+Each buffer and window has its own copy of a local option. Local options have global and local values.
+1. Splitting a window copies the local window options (i.e., global and local value). When a new buffer is loaded into a window, the local value of local window options are set to the global values. When a previously edited buffer is loaded into a window, the local values of the local window options at the time the buffer was unloaded (:e <other-buffer> or :q) in this window are retrieved; otherwise, the local values from the window where the buffer was last unloaded are retrieved. This behavior is easily tested with the numeric, window-local option 'cc' or the boolean option 'list'. To recap, global values for window local options are global for buffers in the window, and local window values are local to buffers in the window. Each window can have its own global value, and the same buffer in different windows can have different local values.
+2. New buffers initialize buffer-local options with the global values of the current buffer. This is done upon buffer editing/entry (:e), rather than creation (:e or :badd), by default (with 's' in 'cpoptions'). Global values are shared between all buffers. Local values are specific to a buffer. This is independent of window (e.g., same buffer in multiple places). Test with 'cink'.
+

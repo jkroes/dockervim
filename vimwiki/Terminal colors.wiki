@@ -1,0 +1,14 @@
+https://en.wikipedia.org/wiki/ANSI_escape_code
+http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#background-colors
+https://wynnnetherland.com/journal/a-stylesheet-author-s-guide-to-terminal-colors/
+https://stackoverflow.com/questions/10003136/what-is-the-difference-between-xterm-color-xterm-256color
+https://en.wikipedia.org/wiki/ANSI_escape_code
+https://jonasjacek.github.io/colors/
+http://vimdoc.sourceforge.net/htmldoc/tips.html#xterm-screens
+https://unix.stackexchange.com/questions/30058/how-can-i-check-which-terminal-definitions-are-available
+https://unix.stackexchange.com/questions/4126/what-is-the-exact-difference-between-a-terminal-a-shell-a-tty-and-a-con
+https://opensource.com/article/19/9/linux-terminal-colors
+https://alvinalexander.com/linux/vi-vim-editor-color-scheme-syntax
+https://gist.github.com/XVilka/8346728
+https://jeffkreeftmeijer.com/vim-16-color/
+https://vi.stackexchange.com/questions/16108/neovim-gray-background

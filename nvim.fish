@@ -16,6 +16,7 @@ xhost + 127.0.0.1
 docker run -it \
  --rm \
  -e DISPLAY=host.docker.internal:0 \
+ -e COLORTERM \
  --mount source=r_pkgs,target=/usr/local/lib/R/site-library \
  -v "$rootdir/nvim:/home/developer/.config/nvim" \
  -v "$rootdir/fish:/home/developer/.config/fish" \

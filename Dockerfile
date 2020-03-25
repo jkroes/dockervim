@@ -70,14 +70,42 @@ RUN chsh -s /usr/bin/fish developer
 
 # SHELL ["/usr/bin/fish", "-c"]
 
-# Install Neovim 0.4.3 and last version of neovim-qt (0.2.8-3) for Ubuntu 18.04
+# Install curl, git, and last version of neovim-qt (0.2.8-3) for Ubuntu 18.04
 # Try building neovim-qt from source if you experience issues. This is an old version.
 RUN apt-get update &&\
     apt-get install -y curl git neovim-qt &&\
     rm -r /var/lib/apt/lists/*
-    
+
+# ripgrep (for vim-clap, :Clap grep)
+RUN curl -LO https://github.com/BurntSushi/ripgrep/releases/download/11.0.2/ripgrep_11.0.2_amd64.deb &&\
+    # Seems to solve an issue with a file provided by fish shell
+    dpkg-divert --add --divert /usr/share/fish/completions/rg.fish.0 --rename \
+    --package ripgrep /usr/share/fish/completions/rg.fish &&\
+    dpkg -i ripgrep_11.0.2_amd64.deb &&\
+    rm ripgrep_11.0.2_amd64.deb
+
+# fd (needed for vim-clap, :Clap files)
+RUN curl -LO https://github.com/sharkdp/fd/releases/download/v7.5.0/fd-musl_7.5.0_amd64.deb &&\
+    dpkg -i fd-musl_7.5.0_amd64.deb &&\
+    rm fd-musl_7.5.0_amd64.deb
+
+# Install hub
+RUN curl -LO https://github.com/github/hub/releases/download/v2.14.2/hub-linux-amd64-2.14.2.tgz &&\
+    tar -xf hub-linux-amd64-2.14.2.tgz &&\
+    rm -dfr hub-linux-amd64-2.14.2.tgz &&\
+    hub-linux-amd64-2.14.2/install &&\
+    rm -dfr hub-linux-amd64-2.14.2
+
+# User-created files and user-installed software
 USER developer
 WORKDIR /home/developer
+
+# Configure hub to run nvim-plugins.fish (global config is user-specific)
+RUN git config --global hub.protocol https &&\
+    git config --global url."https://github.com/".insteadOf git@githun.com: &&\
+    git config --global ur.l"https://".insteadOf git://
+
+# Install Neovim 0.4.3
 RUN curl -LO https://github.com/neovim/neovim/releases/download/v0.4.3/nvim.appimage &&\
     chmod u+x nvim.appimage &&\
     ./nvim.appimage --appimage-extract &&\
@@ -86,27 +114,26 @@ RUN curl -LO https://github.com/neovim/neovim/releases/download/v0.4.3/nvim.appi
     mv squashfs-root apps/nvim &&\
     # https://github.com/roxma/nvim-yarp/issues/21
     pip3 install --upgrade neovim
-    # If mountinga volume to ~/.config/fish, these commands must be run only once within the first
-    # active container based on this image; else changes will be overwritten
-    # alias -s nvim=~/apps/nvim/usr/bin/nvim
-    # alias -s nvim-qt="nvim-qt --nvim ~/apps/nvim/usr/bin/nvim" 
 
 # Configure neovim
-RUN mkdir -p .config/nvim &&\
-    mkdir -p .cache/dein &&\
-    curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > installer.sh &&\
-    chmod +x installer.sh &&\
-    ./installer.sh /home/developer/.cache/dein &&\
-    rm installer.sh
+RUN mkdir -p .config/nvim
+    # mkdir -p .cache/dein &&\
+    # curl -LO https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh &&\
+    # chmod +x installer.sh &&\
+    # ./installer.sh /home/developer/.cache/dein &&\
+    # rm installer.sh
 
-# Install Source Code Pro monospaced font
+# Install Source Code Pro monospaced font (GUI only)
 RUN curl -LO https://github.com/adobe-fonts/source-code-pro/archive/2.030R-ro/1.050R-it.zip &&\
     mkdir ~/.fonts &&\
     unzip 1.050R-it.zip &&\
     rm 1.050R-it.zip &&\
     mv source-code-pro-*-it/OTF/*.otf ~/.fonts/ &&\
     rm -rf source-code-pro* &&\
-    fc-cache -f -v
+    fc-cache -fv
+
+# Coloration in vim
+ENV TERM=xterm-256color
 
 # Start interactive sessions in a fish shell
 CMD ["fish", "--login"]
