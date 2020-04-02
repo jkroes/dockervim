@@ -56,7 +56,7 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD5
 
 # Pip isn't installed with Python
 RUN apt-get update &&\
-    apt-get install -y python3-pip &&\
+    apt-get install -y python-pip python3-pip &&\
     rm -r /var/lib/apt/lists/*
 
 # Use the fish shell (ppa req'd to get completion)
@@ -72,8 +72,8 @@ RUN chsh -s /usr/bin/fish developer
 
 # Install curl, git, and last version of neovim-qt (0.2.8-3) for Ubuntu 18.04
 # Try building neovim-qt from source if you experience issues. This is an old version.
-RUN apt-get update &&\
-    apt-get install -y curl git neovim-qt &&\
+RUN apt-get update &&\     
+    apt-get install -y curl git &&\
     rm -r /var/lib/apt/lists/*
 
 # ripgrep (for vim-clap, :Clap grep)
@@ -106,6 +106,7 @@ RUN git config --global hub.protocol https &&\
     git config --global ur.l"https://".insteadOf git://
 
 # Install Neovim 0.4.3
+# TODO: See the spacevim dockerfile for building from source
 RUN curl -LO https://github.com/neovim/neovim/releases/download/v0.4.3/nvim.appimage &&\
     chmod u+x nvim.appimage &&\
     ./nvim.appimage --appimage-extract &&\
@@ -113,10 +114,16 @@ RUN curl -LO https://github.com/neovim/neovim/releases/download/v0.4.3/nvim.appi
     mkdir apps &&\
     mv squashfs-root apps/nvim &&\
     # https://github.com/roxma/nvim-yarp/issues/21
-    pip3 install --upgrade neovim
+    # https://github.com/neovim/neovim/wiki/FAQ
+    # pip3 install --upgrade neovim
+    python -m pip install setuptools &&\
+    # The first may be equivalent to the second, but the FAQ recommended this
+    python -m pip install --upgrade pynvim &&\
+    python2 -m pip install --upgrade pynvim &&\
+    python3 -m pip install --upgrade pynvim
 
 # Configure neovim
-RUN mkdir -p .config/nvim
+RUN mkdir -p .config/nvim 
     # mkdir -p .cache/dein &&\
     # curl -LO https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh &&\
     # chmod +x installer.sh &&\
@@ -132,8 +139,8 @@ RUN curl -LO https://github.com/adobe-fonts/source-code-pro/archive/2.030R-ro/1.
     rm -rf source-code-pro* &&\
     fc-cache -fv
 
-# Coloration in vim
-ENV TERM=xterm-256color
+# Coloration in vim (apparently not necessary in neovim)
+# ENV TERM=xterm-256color
 
 # Start interactive sessions in a fish shell
 CMD ["fish", "--login"]
