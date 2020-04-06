@@ -8,7 +8,7 @@
 set -l rootdir (realpath (dirname (status --current-filename)))
 
 # Fresh install each time without messing w/ vim-plug path
-rm -dfr "$rootdir/nvim/plugged"
+# rm -dfr "$rootdir/nvim/plugged"
 
 open -a Xquartz
 # Wait for X11 shell window to open to close it; only an estimate on time req'd

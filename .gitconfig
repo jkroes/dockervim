@@ -1,0 +1,14 @@
+# This is Git's per-user configuration file.
+[user]
+	name = Justin Kroes
+	email = jkroes14@ucsbalum.com
+[credential]
+	helper = cache
+[core]
+	excludesfile = /home/developer/.gitignore_global
+[url "https://github.com/"]
+	insteadOf = git@github.com:
+[url "https://"]
+	insteadOf = git://
+[hub]
+	protocol = https

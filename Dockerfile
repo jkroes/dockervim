@@ -70,10 +70,10 @@ RUN chsh -s /usr/bin/fish developer
 
 # SHELL ["/usr/bin/fish", "-c"]
 
-# Install curl, git, and last version of neovim-qt (0.2.8-3) for Ubuntu 18.04
-# Try building neovim-qt from source if you experience issues. This is an old version.
+# Install curl, git, ag (for vim-ctrlspace), and ruby (Neovim provider)
 RUN apt-get update &&\     
-    apt-get install -y curl git &&\
+    apt-get install -y curl git silversearcher-ag ruby-full &&\
+    gem install neovim &&\
     rm -r /var/lib/apt/lists/*
 
 # ripgrep (for vim-clap, :Clap grep)
@@ -96,9 +96,29 @@ RUN curl -LO https://github.com/github/hub/releases/download/v2.14.2/hub-linux-a
     hub-linux-amd64-2.14.2/install &&\
     rm -dfr hub-linux-amd64-2.14.2
 
+# Install universal-ctags
+RUN apt-get update &&\     
+    apt-get install -y autoconf automake python3-docutils libseccomp-dev libjansson-dev libyaml-dev &&\
+    rm -r /var/lib/apt/lists/* &&\
+    git clone https://github.com/universal-ctags/ctags &&\
+    cd ctags &&\
+    ./autogen.sh &&\
+    ./configure &&\
+    make &&\
+    make install &&\
+    cd .. &&\
+    rm -dfr ctags
+
+# Install nodejs for coc.nvim
+RUN curl -sL https://deb.nodesource.com/setup_12.x  | bash -
+RUN apt-get -y install nodejs
+
 # User-created files and user-installed software
 USER developer
 WORKDIR /home/developer
+COPY .gitconfig .
+COPY .ctags .
+COPY .gitignore_global .
 
 # Configure hub to run nvim-plugins.fish (global config is user-specific)
 RUN git config --global hub.protocol https &&\
@@ -141,6 +161,10 @@ RUN curl -LO https://github.com/adobe-fonts/source-code-pro/archive/2.030R-ro/1.
 
 # Coloration in vim (apparently not necessary in neovim)
 # ENV TERM=xterm-256color
+
+# Generate ctags
+## Python
+RUN ctags -R --fields=+l --languages=python --python-kinds=-iv -f ./tags $(python -c "import os, sys; print(' '.join('{}'.format(d) for d in sys.path if os.path.isdir(d)))")
 
 # Start interactive sessions in a fish shell
 CMD ["fish", "--login"]
