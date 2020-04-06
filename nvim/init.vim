@@ -101,27 +101,51 @@ if has_key(g:plugs, 'dracula')
     colorscheme dracula " If using iTerm2, set Profiles>Colors>Colors Presets><colortheme>
 endif
 
+" Anything inserted between entering and exiting insert mode counts as a
+" single change by default. Insertion can be broken into smaller units by remapping
+" insert-mode keys to, e.g., the same keys prefixed by c-g u. E.g., remapping
+" <c-r> results in per-line changes.
+" Base undo relies on u and c-r to navigate the current undo branch. It
+" ignores other branches. Each node in the tree has a temporal order that can
+" be navigated by g+/g- (equivalent to 'move to next/pervious state'). If
+" g+/g- lands you on another branch, then u/c-r will now operate from that
+" branch to the start of the undo history. This is best visualized with undo-tree.
+" In fact, undotree can be navigated from the file it is visualizing simply
+" through these shortcuts. The only new functionality it introduces is the
+" ability to move between saved states--an extension of g-/g+. I don't
+" necessarily save at logical points, and the diff is almost always overkill,
+" so I am using treeundo for its visual, disabling diff, and ignoring the new
+" keybindings. I can hold down u and c-r for rapid movememnt, then use g-/g+
+" if I need branch switching (i.e., if I realize a previous undo was a
+" mistake).
+" The documentation doesn't show it, but a call to UndotreeShow if it's active
+" focuses the window. Then <tab> can be hit to return to the target window.
 if has_key(g:plugs, 'undotree')
     let g:undotree_WindowLayout = 4
-    let g:undotree_DiffAutoOpen = 1
-    let g:undotree_SetFocusWhenToggle = 1 " Focus buffer so keybindings work
-    let g:undotree_RelativeTimestamp = 1
-    let g:undotree_ShortIndicators = 1
-    let g:undotree_HighlightChangedText = 1
-    let g:undotree_SplitWidth = 40
+    let g:undotree_DiffAutoOpen = 0
+    "let g:undotree_SetFocusWhenToggle = 1 " Focus buffer so keybindings work
+    let g:undotree_RelativeTimestamp = 1 " Useful for :earlier and :later
+    let g:undotree_ShortIndicators = 1 " Abbreviated relative time units
+    " Useful in combination with signcolumn, though not documented.
+    " let g:undotree_HighlightChangedText = 1 " Only active if diff window is open
+    let g:undotree_SplitWidth = 30
 
-    nmap <leader>u :<c-u>UndotreeShow<CR>
-    nmap <leader>U :<c-u>UndotreeHide<CR>
+    " Stolen from |clear-undo|
+    " Couldn't get <plug>ClearHistory working, so I replaced it...
+    function! ClearHistory()
+        let old_undolevels = &undolevels
+        set undolevels=-1
+        exe "normal a \<BS>\<Esc>"
+        let &undolevels = old_undolevels
+        unlet old_undolevels
+        " TODO: If a window in current tab has filetype undotree, run UntoreeShow after UndotreeHide
+        UndotreeHide " Need to close buffer for it to show cleared history
+    endfunction
+    command -nargs=0 ClearHistory call ClearHistory()
 
-    function g:Undotree_CustomMap()
-        nmap <buffer> j <plug>UndotreeNextState
-        nmap <buffer> k <plug>UndotreePreviousState
-        nmap <buffer> h <plug>UndotreeNextSavedState
-        nmap <buffer> l <plug>UndotreePreviousSavedState
-        nmap <buffer> ? <plug>UndotreeHelp
-        nmap <buffer> q <plug>UndotreeClose
-        nmap <buffer> c <plug>UndotreeClearHistory
-    endfunc
+    nmap <leader>uc :<c-u>ClearHistory<CR>
+    nmap <leader>us :<c-u>UndotreeShow<CR>
+    nmap <leader>uh :<c-u>UndotreeHide<CR>
 endif
 
 if has_key(g:plugs, 'vim-ctrlspace')
