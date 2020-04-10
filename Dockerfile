@@ -110,8 +110,9 @@ RUN apt-get update &&\
     rm -dfr ctags
 
 # Install nodejs for coc.nvim
-RUN curl -sL https://deb.nodesource.com/setup_12.x  | bash -
-RUN apt-get -y install nodejs
+RUN curl -sL https://deb.nodesource.com/setup_12.x  | bash - &&\
+    apt-get -y install nodejs &&\
+    npm install -g neovim
 
 # User-created files and user-installed software
 USER developer
@@ -142,6 +143,9 @@ RUN curl -LO https://github.com/neovim/neovim/releases/download/v0.4.3/nvim.appi
     python2 -m pip install --upgrade pynvim &&\
     python3 -m pip install --upgrade pynvim
 
+# Python packages
+RUN pip3 install -U jedi jedi-language-server
+
 # Configure neovim
 RUN mkdir -p .config/nvim 
     # mkdir -p .cache/dein &&\
@@ -165,6 +169,10 @@ RUN curl -LO https://github.com/adobe-fonts/source-code-pro/archive/2.030R-ro/1.
 # Generate ctags
 ## Python
 RUN ctags -R --fields=+l --languages=python --python-kinds=-iv -f ./tags $(python -c "import os, sys; print(' '.join('{}'.format(d) for d in sys.path if os.path.isdir(d)))")
+
+# Run neovim setup (package installation and UpdateRemotePlugins)
+# Doesn't seem to install plugins
+# RUN ~/apps/nvim/usr/bin/nvim +UpdateRemotePlugins +qall
 
 # Start interactive sessions in a fish shell
 CMD ["fish", "--login"]

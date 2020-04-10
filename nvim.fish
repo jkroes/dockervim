@@ -4,6 +4,9 @@
 # Run build.fish
 # Run this script (for X11 windows, i.e. nvim-qt) or ubuntu.fish (for no X11 windows)
 # nvim-qt and nvim are aliased to their custom paths
+# Run this once to configure your XQuartz not to launch xterm, since this messes up
+# the window selection in xquartz.scpt:
+# defaults write org.macosforge.xquartz.X11 app_to_run /usr/bin/true
 
 set -l rootdir (realpath (dirname (status --current-filename)))
 
@@ -26,7 +29,8 @@ docker run -it \
  -v "$rootdir/vimwiki:/home/developer/vimwiki" \
  jkroes92/dockervim:latest
 xhost - 127.0.0.1
-osascript -e 'quit app "XQuartz"'
+#osascript -e 'quit app "XQuartz"'
+osascript xquartz.scpt
 
 # X11 security in docker:
 # https://github.com/mviereck/x11docker/wiki ("Howto's for custom setups without X11docker")
