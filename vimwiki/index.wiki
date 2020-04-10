@@ -4,3 +4,4 @@
 
 	* [[Unorganized]]
 		* [[Terminal colors]]
+        * [[Mapping]]
