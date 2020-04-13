@@ -13,7 +13,7 @@ set -l rootdir (realpath (dirname (status --current-filename)))
 # Fresh install each time without messing w/ vim-plug path
 # rm -dfr "$rootdir/nvim/plugged"
 
-open -a Xquartz
+open -a XQuartz
 # Wait for X11 shell window to open to close it; only an estimate on time req'd
 # sleep 8
 # Close X11 shell window that closes up (change this if using a different shell based on output of wmctrl -l)
@@ -30,7 +30,7 @@ docker run -it \
  jkroes92/dockervim:latest
 xhost - 127.0.0.1
 #osascript -e 'quit app "XQuartz"'
-osascript xquartz.scpt
+osascript "$rootdir/xquartz.scpt"
 
 # X11 security in docker:
 # https://github.com/mviereck/x11docker/wiki ("Howto's for custom setups without X11docker")

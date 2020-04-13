@@ -446,9 +446,15 @@ if has_key(g:plugs, 'coc.nvim')
     " Extensions to install
     autocmd VimEnter * CocInstall coc-python
     "autocmd VimEnter * CocInstall coc-highlight " Enables autocmd highlighting
-    "autocmd VimEnter * CocInstall coc-r-lsp
-    "autocmd FileType r let b:coc_suggest_disable = 1
-    autocmd FileType python call Configure_coc_filetypes()
+    " Disable COC by default
+    autocmd FileType * call DisableCocFT ()
+    function! DisableCocFT()
+        if index(['vim', 'python'], &filetype) < 0
+            let b:coc_suggest_disable = 1
+        else
+            call Configure_coc_filetypes()
+        endif
+    endfunction
 endif
 
 " Send single command with :T and reference active buffer with %
