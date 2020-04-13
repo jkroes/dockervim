@@ -1,4 +1,4 @@
-let $NVIM_COC_LOG_LEVEL = 'debug'
+"let $NVIM_COC_LOG_LEVEL = 'debug'
 
 if &compatible
     set nocompatible
@@ -42,13 +42,15 @@ Plug 'vim-ctrlspace/vim-ctrlspace'
 "Plug 'numirias/semshi', { 'do': 'nvim +UpdateRemotePlugins +qall' }
 Plug 'mbbill/undotree'
 Plug 'tpope/vim-fugitive'
-Plug 'majutsushi/tagbar'
+" Plug 'majutsushi/tagbar'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
         Plug 'Shougo/neco-vim' " Vim coc
         Plug 'neoclide/coc-neco'
 Plug 'airblade/vim-gitgutter'
 "Plug 'pechorin/any-jump.vim'
 Plug 'vimwiki/vimwiki'
+"Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
+Plug 'jkroes/neoterm'
 call plug#end()
 
 "Install missing plugins
@@ -100,6 +102,7 @@ augroup END
 " Change what Vim considers to be a word and thus commands like *
 " TODO: Make this filetype-speficic (e.g., include <> for html?)
 set iskeyword+=-
+set splitbelow " Place new window on bottom
 
 " Color configuration
 if $COLORTERM == 'truecolor' " iTerm2 supports 256-bit color and sets this env var
@@ -312,8 +315,11 @@ endif
 if has_key(g:plugs, 'nerdcommenter')
     let NERDDefaultAlign = 'none' " 'none' requires <leader>cl to align delimiters
     " for a selection of lines at different indentation levels
-    let NERDDefaultNesting = 0 " Disabled requires <leader>cn to nest comments,
-    " as desired for regions of mixed comments and code
+    let NERDDefaultNesting = 1 " Disabled requires <leader>cn to nest comments,
+    " as desired for regions of mixed comments and code. The only issue is
+    " there seems to be no way to do nested aligned comments if
+    " NERDDefaultAlign = 'none'. So either disable this or that. Otherwise,
+    " autoformatters may wreak havoc with indentation when toggling comments.
     " let NERDToggleCheckAllLines = 1
     let NERDCommentWholeLinesInVMode = 0 " Comment selection, not entire line
     " Allows different results for line versus char or block visual modes
@@ -445,104 +451,34 @@ if has_key(g:plugs, 'coc.nvim')
     autocmd FileType python call Configure_coc_filetypes()
 endif
 
-" TIP: Renaming using vim:
-" https://vi.stackexchange.com/questions/18004/renaming-variables
-" My own autopairs
-" https://stackoverflow.com/questions/13404602/how-to-prevent-esc-from-waiting-for-more-input-in-insert-mode
-" https://vim.fandom.com/wiki/Automatically_append_closing_characters (see the
-" plugins at the end of the webpage)
-"NOTE: Unless both ( and (<CR> are bound, FastEscape won't affect them. In
-"other words, if only the character itself is bound rather than a key sequence
-"starting with the character, FastEscape is ignored! That's awesome.
-" augroup FastEscape
-      " autocmd!
-      " au InsertEnter * set timeoutlen=500
-      " au InsertLeave * set timeoutlen=1000
-" augroup END
-" Autopair mappings:
-" https://vim.fandom.com/wiki/Automatically_append_closing_characters
-
-" Example for Vim. Vim indents on a line following :fu. <C-d> deletes the
-" indentation, then <C-o> inserts a line above that is auto-indented
-"inoremap (<CR> (<CR><C-d>)<C-o>O
-
+" Send single command with :T and reference active buffer with %
+" E.g., :T cat %
+if has_key(g:plugs, 'neoterm')
+    let g:neoterm_term_per_tab = 1 " Tab-specific terminals
+    let g:neoterm_default_mod = 'belowright'
+    let g:neoterm_autoscroll = 1
+    " Open shell and pass repl command automatically
+    if get(g:, 'neoterm_direct_open_repl', 0) == 0
+        let g:neoterm_auto_repl_cmd = 1
+    endif
+    " Language REPLs
+    let g:neoterm_repl_python = 'ipython3 --no-autoindent'
+    " Easy escape from the terminal
+    tnoremap <Esc> <C-\><C-n>
+    " Bindings that operate on tab-specific teriminal
+    " (or last active terminal if not tab-specific)
+    nnoremap <localleader>c :<c-u>exec v:count.'Tclear!'<CR>
+    nnoremap <localleader>k :<c-u>exec v:count.'Tkill'<CR>
+    nnoremap <localleader>t :<c-u>exec v:count.'Ttoggle'<CR>
+    nnoremap <localleader>q :<c-u>exec v:count.'Tclose!'<CR>
+    nnoremap <localleader>r :<c-u>TREPLSendFile<CR>
+    " ...and work with motions, selections, and counts
+    " E.g., 2gxx or gxip
+    nmap gx <Plug>(neoterm-repl-send)
+    xmap gx <Plug>(neoterm-repl-send)
+    nmap gxx <Plug>(neoterm-repl-send-line)
+endif
+" nnoremap <localleader>i :<c-u>echo b:neoterm_id<CR>
 
 " Open init.vim to start
 e $MYVIMRC
-
-" Note that submodes can not accommodate counts. You could investigate
-" tinykeymap, but I couldn't get window movement to work:
-" https://github.com/vim-scripts/tinykeymap/blob/master/autoload/tinykeymap/map/windows.vim
-" Doing so would enable proper use of c-w x, for swapping w/ the n-th window
-" Submodes also don't seem to support commands in {RHS}
-
-" Using tmux and vim:
-" https://statico.github.io/vim3.html
-" The example here is a vim binding to execute the previous command in a
-" terminal's command histroy. It relies on tmux to send keys between
-" terminals. This is useful if you're editing a script and want to test it. Of
-" course, this can probably be done in vim directly.
-
-" For LSP with R, see either LanguageClient-neovim or coc-r-lsp and coc.nvim:
-"https://cran.r-project.org/web/packages/languageserver/readme/README.html
-"Note that only LC-neovim, not coc.nvim, is designed to integrate with ncm2
-"and thus ncm-r. ALthough code is provided to integrate somewhat:
-" https://github.com/ncm2/ncm2/issues/51
-" Is this true? What about b:coc_suggest_disable? Or is this issue using coc
-" for completion?
-"https://cran.r-project.org/web/packages/languageserver/readme/README.html
-"General tutorial:
-"https://jacky.wtf/weblog/language-client-and-neovim/
-" Consider coc.nvim for other languages:
-" https://www.narga.net/how-to-set-up-code-completion-for-vim/#why_is_cocvim
-"syntastics vs ale vs coc.nvim
-
-" Windoes management sucks. See:
-" https://github.com/spolu/dwm.vim
-" https://www.reddit.com/r/vim/comments/3htkd7/rotate_windows_clockwise_anticlockwise/
-
-" Neovim GUIs and packages:
-" https://github.com/neovim/neovim/wiki/Related-projects
-
-" Example of calling function from command (see f-args)
-    " function! MyEdit(x)
-        " " Disable partial matching for :sb and avoid errors for non-matches
-        " if bufexists(a:x)
-            " execute 'sb' a:x
-        " else
-            " execute 'buffer' a:x
-        " endif
-    " endfunction
-    " command! -bang -nargs=1 Test call MyEdit(<f-args>)
-
-" TODO: Parse lines to get keys bound to each submode, invert, write vim commands,
-" save to file, then source in vim
-" By default, any unbound key exits the mode. Therefore, to prevent any key
-" but the desired exit key from leaving the submode, bind all unused keys
-" to <Nop>. See submode#unmap
-" function! s:getmap()
-    " silent !rm -f ~/.config/nvim/map.txt
-    " redir > ~/.config/nvim/map.txt
-    " silent map
-    " redir END
-" endfunction
-" autocmd VimEnter * call s:getmap()
-
-" function! s:csk()
-    " silent !rm -f temp
-    " redir > temp
-    " silent echo ctrlspace#keys#KeyMap()
-    " redir END
-" endfunction
-" autocmd VimEnter * call s:csk()
-
-"Tags (in R)
-"https://docs.ctags.io/en/latest/index.htmf
-" https://ricostacruz.com/til/navigate-code-with-ctags (see shortcuts)
-" https://www.fusionbox.com/blog/detail/navigating-your-django-project-with-vim-and-ctags/590/
-" https://vim.fandom.com/wiki/Browsing_programs_with_tags" https://github.com/lyuts/vim-rtags
-
-" You can generate tags for R in ctags, or use rtags and etags2ctags
-" https://tinyheero.github.io/2017/05/13/r-vim-ctags.html
-" https://stackoverflow.com/questions/4794859/exuberant-ctags-with-r
-" etags2ctags is provided by nvim-r

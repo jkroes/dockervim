@@ -155,6 +155,7 @@ RUN mkdir -p .config/nvim
     # rm installer.sh
 
 # Install Source Code Pro monospaced font (GUI only)
+# NOTE: For TUI, install the desired font on host and set terminal to use host font
 RUN curl -LO https://github.com/adobe-fonts/source-code-pro/archive/2.030R-ro/1.050R-it.zip &&\
     mkdir ~/.fonts &&\
     unzip 1.050R-it.zip &&\

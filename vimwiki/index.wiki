@@ -2,6 +2,8 @@
 
 == Vim ==
 
+        * [[Edits to init.vim]]
 	* [[Unorganized]]
 		* [[Terminal colors]]
         * [[Mapping]]
+        * [[neoterm]]
