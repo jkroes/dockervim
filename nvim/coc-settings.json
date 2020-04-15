@@ -9,9 +9,12 @@
 
     // Autoformat on save using language-specific autoformatter
     "coc.preferences.formatOnSaveFiletypes": ["python"],
-    "suggest.enablePreview": true,
+    // Does this enable previewing documentation? Doesn't seem to affect it. So what then?
+    "suggest.enablePreview": false,
     // Beginning completion with first item selected prevents <CR> from ignoring completion suggestions
     "coc.preferences.noselect": true,
+    // Show all diagnostics of current line if not cursuring over a particular diagnostic
+    "diagnostic.checkCurrentLine": true,
     // Must be set to false to use the Microsoft PLS for completion rather than JEDI:
     // https://github.com/microsoft/python-language-server
     // The VSCode python extension offers the same option, and python-coc is a port

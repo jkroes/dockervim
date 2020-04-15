@@ -12,7 +12,9 @@ endif
 
 " List of plugins
 call plug#begin()
-Plug 'dracula/vim', {'as':'dracula'}
+" Plug 'dracula/vim', {'as':'dracula'}
+Plug 'drewtempelmeyer/palenight.vim'
+" Plug 'rakr/vim-one'
 "Plug 'liuchengxu/vim-which-key'
 Plug 'sunaku/vim-shortcut'
     Plug 'junegunn/fzf'
@@ -20,16 +22,6 @@ Plug 'sunaku/vim-shortcut'
 Plug 'vimwiki/vimwiki'
 Plug 'jkroes/vim-clap', { 'do': ':Clap install-binary!' }
     Plug 'ryanoasis/vim-devicons' " README recommends loading this last
-Plug 'jalvesaq/Nvim-R'
-Plug 'gaalcaras/ncm-R'
-    Plug 'roxma/nvim-yarp'
-    Plug 'ncm2/ncm2'
-        " " Plug 'ncm2/ncm2-ultisnips'
-            " Plug 'SirVer/ultisnips' " See https://github.com/honza/vim-snippets
-        Plug 'ncm2/ncm2-path'
-        Plug 'ncm2/ncm2-github'
-        Plug 'ncm2/ncm2-bufword'
-        Plug 'ncm2/ncm2-path'
 Plug 'tpope/vim-surround'
 Plug 'preservim/nerdcommenter'
 Plug 'jkroes/tinykeymap'
@@ -43,15 +35,29 @@ Plug 'vim-ctrlspace/vim-ctrlspace'
 Plug 'mbbill/undotree'
 Plug 'tpope/vim-fugitive'
 " Plug 'majutsushi/tagbar'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-        Plug 'Shougo/neco-vim' " Vim coc
-        Plug 'neoclide/coc-neco'
 Plug 'airblade/vim-gitgutter'
 "Plug 'pechorin/any-jump.vim'
 Plug 'vimwiki/vimwiki'
-"Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
 Plug 'jkroes/neoterm'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+        Plug 'Shougo/neco-vim' " Vim coc
+        Plug 'neoclide/coc-neco'
+"Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
+Plug 'jalvesaq/Nvim-R'
+Plug 'gaalcaras/ncm-R'
+    Plug 'roxma/nvim-yarp'
+    Plug 'ncm2/ncm2'
+        " " Plug 'ncm2/ncm2-ultisnips'
+            " Plug 'SirVer/ultisnips' " See https://github.com/honza/vim-snippets
+        Plug 'ncm2/ncm2-path'
+        Plug 'ncm2/ncm2-github'
+        Plug 'ncm2/ncm2-bufword'
+        Plug 'ncm2/ncm2-path'
 call plug#end()
+" TODO: Research coc.nvim, nvim-R, python-mode, and coc-r-lsp. E.g., use the
+" latter to enable signatures, which are missing from nvim-R but keep
+" completion disabled. Also see vim-pythonsense, vim-python-pop3-indent, and
+" vim-indent-object.
 
 "Install missing plugins
 if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
@@ -93,6 +99,8 @@ set ignorecase " Match all cases with lowercase queries, and with smartcase...
 set smartcase " Use exact case match only for mixed case queries
 set switchbuf=useopen,usetab " Jump to first window in first tab where buffer is open for certain commands
 autocmd BufWritePre * %s/\s\+$//e " Remove trailing whitespace
+" Navigate highlighted searches with C-g/C-t
+" Unhighlight on escape or enter
 set incsearch
 augroup vimrc-incsearch-highlight
     autocmd!
@@ -106,12 +114,14 @@ set splitbelow " Place new window on bottom
 
 " Color configuration
 if $COLORTERM == 'truecolor' " iTerm2 supports 256-bit color and sets this env var
+            \ && has('termguicolors')
         set termguicolors " Enable in 256-bit terminals (ignored by nvim GUIs)
 endif " :h term.txt
 set background=dark " Must be compatible with colorscheme
-if has_key(g:plugs, 'dracula')
-    colorscheme dracula " If using iTerm2, set Profiles>Colors>Colors Presets><colortheme>
-endif
+" if has_key(g:plugs, 'dracula')
+    " colorscheme dracula " If using iTerm2, set Profiles>Colors>Colors Presets><colortheme>
+" endif
+colorscheme palenight
 
 " Anything inserted between entering and exiting insert mode counts as a
 " single change by default. Insertion can be broken into smaller units by remapping
@@ -183,6 +193,9 @@ if has_key(g:plugs, 'vim-ctrlspace')
     let g:CtrlSpaceKeys.Search['.'] = 'ctrlspace#keys#search#AddLetter'
     let g:CtrlSpaceKeys.Search['_'] = 'ctrlspace#keys#search#AddLetter'
     let g:CtrlSpaceKeys.Search['-'] = 'ctrlspace#keys#search#AddLetter'
+
+    nnoremap <leader>bn :<c-u>CtrlSpaceGoDown<cr>
+    nnoremap <leader>bp :<c-u>CtrlSpaceGoUp<cr>
 endif
 
 if has_key(g:plugs, 'Nvim-R')
@@ -228,9 +241,9 @@ if has_key(g:plugs, 'vim-which-key')
     let g:which_key_use_floating_win = 1
     if g:which_key_use_floating_win
         let g:which_key_floating_opts = {'col': -2, 'width': +3}
-        if g:colors_name == 'dracula'
-            hi link WhichKeyFloating DraculaFg
-        endif
+        " if g:colors_name == 'dracula'
+            " hi link WhichKeyFloating DraculaFg
+        " endif
     endif
 endif
 
