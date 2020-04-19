@@ -123,8 +123,8 @@ COPY .gitignore_global .
 
 # Configure hub to run nvim-plugins.fish (global config is user-specific)
 RUN git config --global hub.protocol https &&\
-    git config --global url."https://github.com/".insteadOf git@githun.com: &&\
-    git config --global ur.l"https://".insteadOf git://
+    git config --global url."https://github.com/".insteadOf git@github.com: &&\
+    git config --global url."https://".insteadOf git://
 
 # Install Neovim 0.4.3
 # TODO: See the spacevim dockerfile for building from source
