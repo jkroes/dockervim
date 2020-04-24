@@ -12,9 +12,11 @@ endif
 
 " List of plugins
 call plug#begin()
+Plug 'iamcco/markdown-preview.nvim', {'do': { -> mkdp#util#install() }}
 " Plug 'dracula/vim', {'as':'dracula'}
 Plug 'drewtempelmeyer/palenight.vim'
 " Plug 'rakr/vim-one'
+Plug 'rafaqz/ranger.vim'
 "Plug 'liuchengxu/vim-which-key'
 Plug 'sunaku/vim-shortcut'
     Plug 'junegunn/fzf'
@@ -37,7 +39,6 @@ Plug 'tpope/vim-fugitive'
 " Plug 'majutsushi/tagbar'
 Plug 'airblade/vim-gitgutter'
 "Plug 'pechorin/any-jump.vim'
-Plug 'vimwiki/vimwiki'
 Plug 'jkroes/neoterm'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
         Plug 'Shougo/neco-vim' " Vim coc
@@ -111,6 +112,7 @@ augroup END
 " TODO: Make this filetype-speficic (e.g., include <> for html?)
 set iskeyword+=-
 set splitbelow " Place new window on bottom
+set whichwrap+=b,<,>,h,l,[,] " Which horizontal movements can cross lines?
 
 " Color configuration
 if $COLORTERM == 'truecolor' " iTerm2 supports 256-bit color and sets this env var
@@ -122,6 +124,23 @@ set background=dark " Must be compatible with colorscheme
     " colorscheme dracula " If using iTerm2, set Profiles>Colors>Colors Presets><colortheme>
 " endif
 colorscheme palenight
+
+if has_key(g:plugs, 'ranger.vim')
+    " Open files
+    map <leader>rr :RangerEdit<cr>
+    map <leader>rv :RangerVSplit<cr>
+    map <leader>rs :RangerSplit<cr>
+    map <leader>rt :RangerTab<cr>
+    " Paste paths
+    map <leader>ri :RangerInsert<cr>
+    map <leader>ra :RangerAppend<cr>
+    " Replace text based on motion (e.g., '<leader>rci(')
+    map <leader>rc :set operatorfunc=RangerChangeOperator<cr>g@
+    " Change dir (lcd is an ftp command for local cd)
+    " https://www.serv-u.com/features/file-transfer-protocol-server-linux/commands
+    map <leader>rd :RangerCD<cr>
+    map <leader>rld :RangerLCD<cr>
+endif
 
 " Anything inserted between entering and exiting insert mode counts as a
 " single change by default. Insertion can be broken into smaller units by remapping
@@ -364,16 +383,25 @@ endif
 " !!!plugin/vimwiki.vim. Does vim-plug auto-source this file? See |autoload|
 " and whether it answers this.!!!
 "autocmd FileType vimwiki set ft=markdown
+" https://vimwiki.github.io/vimwikiwiki/
 if has_key(g:plugs, 'vimwiki')
+    " Per Wiki ("local") options
     let w1 = {}
     let w1.path = '~/vimwiki'
     let w1.auto_toc = 1
     let w1.automatic_nested_syntaxes = 1
     let g:vimwiki_list = [w1]
 
+    " Global options
     " The following could be useful for navigating to project (README)s
     " g:vimwiki_dir_link
     let g:vimwiki_autowriteall = 1
+    let g:vimwiki_table_auto_format=0
+    " See https://vimwiki.github.io/vimwikiwiki/Tips%20and%20Snips.html
+    "let g:vimwiki_folding='expr'
+    "autocmd FileType vimwiki setlocal foldenable
+    "autocmd FileType vimwiki setlocal foldmethod=expr
+    autocmd FileType vimwiki setlocal textwidth=80
 endif
 
 if has_key(g:plugs, 'tinykeymap')

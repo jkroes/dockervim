@@ -7,3 +7,107 @@
 		* [[Terminal colors]]
         * [[Mapping]]
         * [[neoterm]]
+http://vimcasts.org/episodes/hard-wrapping-text/
+
+
+[[Git]]
+
+= HTML Instructions =
+
+:Vimwiki2html converts wiki to html
+Add in html cheatsheets somehow (R cheatsheet creator for tables)
+View html using a text-based browser like elinks:
+https://vim.fandom.com/wiki/Preview_current_HTML_file
+
+Alternatively use a previewer:
+https://browsersync.io
+https://github.com/turbio/bracey.vim
+https://github.com/greyblake/vim-preview
+
+= vimwiki wiki =
+https://vimwiki.github.io/vimwikiwiki/
+
+= From my macOS nvim config =
+" nvim-gdb configuration
+" disable dd, dl, and db; configure dpy to use python3 instead of python2
+let g:nvimgdb_disable_start_keymaps=1
+nnoremap <leader>dpy :GdbStartPDB python3 -m pdb main.py
+" Disable these key (re?)mappings in Terminal mode; enable in normal
+let g:nvimgdb_config_override = {
+  \ 'key_until': '<leader>du',
+  \ 'key_continue': '<leader>dc',
+  \ 'key_next': '<leader>dn',
+  \ 'key_step': '<leader>ds',
+  \ 'key_finish': '<leader>df',
+  \ 'key_breakpoint': '<leader>db',
+  \ 'key_frameup': '<leader>dp',
+  \ 'key_framedown': '<leader>dn',
+  \ 'key_eval': '<leader>de',
+  \ 'set_tkeymaps': "NvimGdbNoTKeymaps",
+  \ }
+" TODO: Investigate whether key_eval binds both normal and visual eval
+
+
+"Investigate:
+" SimplyFold
+" git
+"   vim-fugitive
+" indent
+"   vim-python-pep8-indent<F13>
+" completion
+"   youcompleteme
+"   ncm2
+"   deoplete
+"   jedi-vim
+"   completor.vim
+" lint
+"   ale
+"   languageclient-neovim
+"   vim-flake8
+"syntax
+"   python-syntax
+"   python-mode
+"autoformat
+"   yapf
+"   vim-autofromat
+"Plugins to investigate
+        " honza/vim-snippets
+        " dense-analysis/ale
+        " autocomplete
+                " youcompleteme
+	"vim-markdown
+	"supertab
+        " vim-multiple-cursors
+        " tpope/sensible-vim
+        " vim-gitgutter
+        " powerline or vim-airline and/or vim-airline-themes (select one without Univode for WSL)
+        "   Plugin 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
+        " ctrlp
+        " tabular
+        " denite or fzf
+        " undotree
+        " indent guides
+        " vim-surround
+        " vim-endwise
+        " commentary
+        " matchit (see https://catonmat.net/vim-plugins-matchit-vim)
+"Outdated plugins that need to be rewritten
+        "Plug 'dag/vim-fish'
+
+" NOTES
+"1. Curl does not work in WSL by default. Run the following code, extract
+"   the last certificate in cacert.pem, and copy it over to
+"   /etc/ssl/certs/ca-certificates.crt
+"   > echo quit| openssl s_client -showcerts -servername api.github.com
+"     -connect api.github.com:443 > cacert.pem
+"
+"   Source:
+"   https://unix.stackexchange.com/questions/451207/
+"   how-to-trust-self-signed-certificate-in-curl-command-line
+"
+"   Alternatively, you might be able to alias curl as
+"   > curl -cacert /mnt/c/Program\ Files/Git/mingw64/ssl/certs/ca-bundle.crt
+"
+"   Alternatively, you can follow the first link's advice and use insecure curl
+"
+
