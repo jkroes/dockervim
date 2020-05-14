@@ -24,10 +24,6 @@ docker run -it \
  -e DISPLAY=host.docker.internal:0 \
  -e COLORTERM \
  --mount source=r_pkgs,target=/usr/local/lib/R/site-library \
- -v "$rootdir/nvim:/home/developer/.config/nvim" \
- -v "$rootdir/fish:/home/developer/.config/fish" \
- -v "$rootdir/vimwiki:/home/developer/vimwiki" \
- -v ~/temp:/home/developer/voc \
  jkroes92/dockervim:latest
 xhost - 127.0.0.1
 #osascript -e 'quit app "XQuartz"'

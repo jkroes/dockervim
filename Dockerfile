@@ -17,9 +17,12 @@ RUN yes | unminimize
 # Noninteractive apt-install and dpkg-reconfigure during build-time only
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Future interactive installations (apt-utils already installed)
 RUN apt-get update &&\
-    apt-get install -y debconf-utils &&\
+    apt-get install -y \
+            # Future interactive installations
+            debconf-utils \
+            # Ranger file browser
+            ranger &&\
     rm -r /var/lib/apt/lists/*
 
 # Generate and set locale to UTF-8
@@ -51,7 +54,7 @@ RUN apt-get update &&\
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9 &&\
     apt-add-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran35/' &&\
     apt-get update &&\
-    apt-get install -y r-base libcurl4-openssl-dev libssl-dev libxml2-dev &&\
+    apt-get install -y r-base libcurl4-openssl-dev libssl-dev libxml2-dev pandoc &&\
     rm -r /var/lib/apt/lists/*
 
 # Pip isn't installed with Python
@@ -119,7 +122,8 @@ USER developer
 WORKDIR /home/developer
 COPY .gitconfig .
 COPY .ctags .
-COPY .gitignore_global .
+COPY .gitignore_global . 
+COPY .fdignore .
 
 # Configure hub to run nvim-plugins.fish (global config is user-specific)
 RUN git config --global hub.protocol https &&\
@@ -141,10 +145,10 @@ RUN curl -LO https://github.com/neovim/neovim/releases/download/v0.4.3/nvim.appi
     # The first may be equivalent to the second, but the FAQ recommended this
     python -m pip install --upgrade pynvim &&\
     python2 -m pip install --upgrade pynvim &&\
-    python3 -m pip install --upgrade pynvim
+    python3 -m pip install --upgrade pynvim 
 
 # Python packages
-RUN pip3 install -U jedi jedi-language-server
+RUN pip3 install -U jedi jedi-language-server black pylint
 
 # Configure neovim
 RUN mkdir -p .config/nvim 
@@ -164,6 +168,9 @@ RUN curl -LO https://github.com/adobe-fonts/source-code-pro/archive/2.030R-ro/1.
     rm -rf source-code-pro* &&\
     fc-cache -fv
 
+# Install Rust for faster vim-clap
+# RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+
 # Coloration in vim (apparently not necessary in neovim)
 # ENV TERM=xterm-256color
 
@@ -172,8 +179,8 @@ RUN curl -LO https://github.com/adobe-fonts/source-code-pro/archive/2.030R-ro/1.
 RUN ctags -R --fields=+l --languages=python --python-kinds=-iv -f ./tags $(python -c "import os, sys; print(' '.join('{}'.format(d) for d in sys.path if os.path.isdir(d)))")
 
 # Run neovim setup (package installation and UpdateRemotePlugins)
-# Doesn't seem to install plugins
-# RUN ~/apps/nvim/usr/bin/nvim +UpdateRemotePlugins +qall
+# RUN ~/apps/nvim/usr/bin/nvim --headless +"PlugInstall --sync" +qa
+# RUN ~/apps/nvim/usr/bin/nvim --headless +"PlugUpdate --sync" +qa
 
 # Start interactive sessions in a fish shell
 CMD ["fish", "--login"]
