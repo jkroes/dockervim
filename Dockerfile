@@ -44,7 +44,7 @@ RUN useradd -m developer &&\
     # Enable sudo
     echo "developer ALL=(ALL) ALL" > /etc/sudoers.d/developer &&\
     chmod 0440 /etc/sudoers.d/developer
-    
+ 
 # Get add-apt command for installation from external repositories
 RUN apt-get update &&\
     apt-get install -y software-properties-common &&\
@@ -73,7 +73,7 @@ RUN chsh -s /usr/bin/fish developer
 
 # SHELL ["/usr/bin/fish", "-c"]
 
-# Install curl, git, ag (for vim-ctrlspace), and ruby (Neovim provider)
+# Install curl, igitgit, ag (for vim-ctrlspace), and ruby (Neovim provider)
 RUN apt-get update &&\     
     apt-get install -y curl git silversearcher-ag ruby-full &&\
     gem install neovim &&\
@@ -120,10 +120,15 @@ RUN curl -sL https://deb.nodesource.com/setup_12.x  | bash - &&\
 # User-created files and user-installed software
 USER developer
 WORKDIR /home/developer
-COPY .gitconfig .
-COPY .ctags .
-COPY .gitignore_global . 
-COPY .fdignore .
+
+# Download my repositories
+# NOTE: I could only make this work by running mv from within dotfiles. No idea why.
+RUN git clone https://github.com/jkroes/dotfiles &&\
+    cd dotfiles &&\
+    ls -A  | xargs mv -t .. &&\
+    cd .. &&\
+    rm -dfr dotfiles &&\
+    git clone https://github.com/jkroes/vimwiki
 
 # Configure hub to run nvim-plugins.fish (global config is user-specific)
 RUN git config --global hub.protocol https &&\
@@ -150,23 +155,15 @@ RUN curl -LO https://github.com/neovim/neovim/releases/download/v0.4.3/nvim.appi
 # Python packages
 RUN pip3 install -U jedi jedi-language-server black pylint
 
-# Configure neovim
-RUN mkdir -p .config/nvim 
-    # mkdir -p .cache/dein &&\
-    # curl -LO https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh &&\
-    # chmod +x installer.sh &&\
-    # ./installer.sh /home/developer/.cache/dein &&\
-    # rm installer.sh
-
 # Install Source Code Pro monospaced font (GUI only)
 # NOTE: For TUI, install the desired font on host and set terminal to use host font
-RUN curl -LO https://github.com/adobe-fonts/source-code-pro/archive/2.030R-ro/1.050R-it.zip &&\
-    mkdir ~/.fonts &&\
-    unzip 1.050R-it.zip &&\
-    rm 1.050R-it.zip &&\
-    mv source-code-pro-*-it/OTF/*.otf ~/.fonts/ &&\
-    rm -rf source-code-pro* &&\
-    fc-cache -fv
+# RUN curl -LO https://github.com/adobe-fonts/source-code-pro/archive/2.030R-ro/1.050R-it.zip &&\
+#     mkdir ~/.fonts &&\
+#     unzip 1.050R-it.zip &&\
+#     rm 1.050R-it.zip &&\
+#     mv source-code-pro-*-it/OTF/*.otf ~/.fonts/ &&\
+#     rm -rf source-code-pro* &&\
+#     fc-cache -fv
 
 # Install Rust for faster vim-clap
 # RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
@@ -181,6 +178,7 @@ RUN ctags -R --fields=+l --languages=python --python-kinds=-iv -f ./tags $(pytho
 # Run neovim setup (package installation and UpdateRemotePlugins)
 # RUN ~/apps/nvim/usr/bin/nvim --headless +"PlugInstall --sync" +qa
 # RUN ~/apps/nvim/usr/bin/nvim --headless +"PlugUpdate --sync" +qa
+
 
 # Start interactive sessions in a fish shell
 CMD ["fish", "--login"]
