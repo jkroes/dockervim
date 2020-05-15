@@ -93,11 +93,11 @@ RUN curl -LO https://github.com/sharkdp/fd/releases/download/v7.5.0/fd-musl_7.5.
     rm fd-musl_7.5.0_amd64.deb
 
 # Install hub
-RUN curl -LO https://github.com/github/hub/releases/download/v2.14.2/hub-linux-amd64-2.14.2.tgz &&\
-    tar -xf hub-linux-amd64-2.14.2.tgz &&\
-    rm -dfr hub-linux-amd64-2.14.2.tgz &&\
-    hub-linux-amd64-2.14.2/install &&\
-    rm -dfr hub-linux-amd64-2.14.2
+# RUN curl -LO https://github.com/github/hub/releases/download/v2.14.2/hub-linux-amd64-2.14.2.tgz &&\
+#     tar -xf hub-linux-amd64-2.14.2.tgz &&\
+#     rm -dfr hub-linux-amd64-2.14.2.tgz &&\
+#     hub-linux-amd64-2.14.2/install &&\
+#     rm -dfr hub-linux-amd64-2.14.2
 
 # Install universal-ctags
 RUN apt-get update &&\     
@@ -113,7 +113,7 @@ RUN apt-get update &&\
     rm -dfr ctags
 
 # Install nodejs for coc.nvim
-RUN curl -sL https://deb.nodesource.com/setup_12.x  | bash - &&\
+run curl -sl https://deb.nodesource.com/setup_12.x  | bash - &&\
     apt-get -y install nodejs &&\
     npm install -g neovim
 
@@ -129,6 +129,12 @@ RUN git clone https://github.com/jkroes/dotfiles &&\
     cd .. &&\
     rm -dfr dotfiles &&\
     git clone https://github.com/jkroes/vimwiki
+
+# Create mounted directories (see nvim.fish) to avoid root owning them
+RUN mkdir /home/developer/.cache &&\
+    mkdir /home/developer/.config/coc &&\
+    mkdir /home/developer/.config/nvim/plugged &&\
+    mkdir /home/developer/.local
 
 # Configure hub to run nvim-plugins.fish (global config is user-specific)
 RUN git config --global hub.protocol https &&\
@@ -178,7 +184,6 @@ RUN ctags -R --fields=+l --languages=python --python-kinds=-iv -f ./tags $(pytho
 # Run neovim setup (package installation and UpdateRemotePlugins)
 # RUN ~/apps/nvim/usr/bin/nvim --headless +"PlugInstall --sync" +qa
 # RUN ~/apps/nvim/usr/bin/nvim --headless +"PlugUpdate --sync" +qa
-
 
 # Start interactive sessions in a fish shell
 CMD ["fish", "--login"]
