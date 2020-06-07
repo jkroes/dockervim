@@ -159,7 +159,7 @@ RUN curl -LO https://github.com/neovim/neovim/releases/download/v0.4.3/nvim.appi
     python3 -m pip install --upgrade pynvim 
 
 # Python packages
-RUN pip3 install -U jedi jedi-language-server black pylint
+RUN pip3 install -U jedi jedi-language-server black pylint nvr
 
 # Install Source Code Pro monospaced font (GUI only)
 # NOTE: For TUI, install the desired font on host and set terminal to use host font

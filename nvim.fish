@@ -20,11 +20,10 @@ docker run -it \
  --rm \
  -e DISPLAY=host.docker.internal:0 \
  -e COLORTERM \
+# These are deleted upon each build in build.fish. Before rebuilding, commit changes to repositories such as
+# jkroes/dockervim and jkroes/dotfiles
  --mount source=r_pkgs,target=/usr/local/lib/R/site-library \
- --mount source=cache,target=/home/developer/.cache \
- --mount source=coc,target=/home/developer/.config/coc \
- --mount source=local,target=/home/developer/.local \
- --mount source=plug,target=/home/developer/.config/nvim/plugged \
+ --mount source=home,target=/home/developer/ \
  jkroes92/dockervim:latest
 xhost - 127.0.0.1
 osascript "$rootdir/xquartz.scpt"
