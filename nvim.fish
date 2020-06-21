@@ -1,12 +1,13 @@
 #!/usr/bin/env fish
 
-# Build process:
-# Run build.fish
-# Run this script (for X11 windows, i.e. nvim-qt) or ubuntu.fish (for no X11 windows)
-# nvim-qt and nvim are aliased to their custom paths
 # Run the line below once to configure your XQuartz not to launch xterm, since this messes up
 # the window selection in xquartz.scpt:
 # defaults write org.macosforge.xquartz.X11 app_to_run /usr/bin/true
+
+# Build process:
+# Run build.fish
+# Run this script
+# nvim-qt and nvim are aliased to their custom paths
 
 set -l rootdir (realpath (dirname (status --current-filename)))
 
@@ -18,6 +19,8 @@ open -a XQuartz
 xhost + 127.0.0.1
 docker run -it \
  --rm \
+ -p 3000:3000 \
+ -p 3001:3001 \
  -e DISPLAY=host.docker.internal:0 \
  -e COLORTERM \
 # These are deleted upon each build in build.fish. Before rebuilding, commit changes to repositories such as
