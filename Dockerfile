@@ -44,7 +44,7 @@ RUN useradd -m developer &&\
     # Enable sudo
     echo "developer ALL=(ALL) ALL" > /etc/sudoers.d/developer &&\
     chmod 0440 /etc/sudoers.d/developer
- 
+
 # Get add-apt command for installation from external repositories
 RUN apt-get update &&\
     apt-get install -y software-properties-common &&\
@@ -74,7 +74,7 @@ RUN chsh -s /usr/bin/fish developer
 # SHELL ["/usr/bin/fish", "-c"]
 
 # Install curl, igitgit, ag (for vim-ctrlspace), and ruby (Neovim provider)
-RUN apt-get update &&\     
+RUN apt-get update &&\
     apt-get install -y curl git silversearcher-ag ruby-full &&\
     gem install neovim &&\
     rm -r /var/lib/apt/lists/*
@@ -100,7 +100,7 @@ RUN curl -LO https://github.com/sharkdp/fd/releases/download/v7.5.0/fd-musl_7.5.
 #     rm -dfr hub-linux-amd64-2.14.2
 
 # Install universal-ctags
-RUN apt-get update &&\     
+RUN apt-get update &&\
     apt-get install -y autoconf automake python3-docutils libseccomp-dev libjansson-dev libyaml-dev &&\
     rm -r /var/lib/apt/lists/* &&\
     git clone https://github.com/universal-ctags/ctags &&\
@@ -156,7 +156,7 @@ RUN curl -LO https://github.com/neovim/neovim/releases/download/v0.4.3/nvim.appi
     # The first may be equivalent to the second, but the FAQ recommended this
     python -m pip install --upgrade pynvim &&\
     python2 -m pip install --upgrade pynvim &&\
-    python3 -m pip install --upgrade pynvim 
+    python3 -m pip install --upgrade pynvim
 
 # Python packages
 RUN pip3 install -U jedi jedi-language-server black pylint nvr
@@ -194,7 +194,7 @@ CMD ["fish", "--login"]
 # useradd edits /etc/passwd, /etc/shadow, /etc/group, and /etc/gshadow (uid, gid default to 1000; shell defaults to sh)
 # and creates home directory (-m), which defaults to /home/<user>
 
-# macOS docker auto-maps macOS UIDs to different linux UIDs: 
+# macOS docker auto-maps macOS UIDs to different linux UIDs:
 # https://stackoverflow.com/questions/43097341/docker-on-macosx-does-not-translate-file-ownership-correctly-in-volumes
 # If you specify a username, the standard first-user UID/GID of 1000 will be given to the name
 
