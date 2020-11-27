@@ -115,7 +115,7 @@ RUN apt-get update &&\
 # Install nodejs for coc.nvim
 run curl -sl https://deb.nodesource.com/setup_12.x  | bash - &&\
     apt-get -y install nodejs &&\
-    npm install -g neovim
+    npm install -g neovim browser-sync
 
 # User-created files and user-installed software
 USER developer
